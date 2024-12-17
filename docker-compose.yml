@@ -2,29 +2,28 @@ version: '3.8'
 
 services:
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ihatevirtualization/flask-transaction-app:latest  # Использование образа из Docker Hub
     ports:
-      - "5000:5000"
+      - "5000:5000"  # Проброс порта Flask-приложения
     environment:
       - FLASK_APP=app.py
       - FLASK_RUN_HOST=0.0.0.0
+      - SQLALCHEMY_DATABASE_URI=postgresql://user:password@db:5432/testdb
     depends_on:
-      - db
-    volumes:
-      - ./app:/app
+      - db  # Зависимость от PostgreSQL
+    restart: unless-stopped
 
   db:
-    image: postgres:15
+    image: postgres:15  # Используем официальный образ PostgreSQL
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: testdb
     ports:
-      - "5432:5432"
+      - "5432:5432"  # Проброс порта PostgreSQL
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
 volumes:
   postgres_data:
